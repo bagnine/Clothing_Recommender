@@ -352,5 +352,5 @@ MigrationBackup/
 chromedriver
 /src/images
 .DS_Store
-/src/dummy
+/src/converted_images
 /src/test
