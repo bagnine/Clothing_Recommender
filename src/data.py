@@ -18,7 +18,8 @@ def scroll_page(number_of_scrolls):
     # Scroll the specified number of times with a 2 second break in between
     for i in range(0,number_of_scrolls):
         driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
-        print(f'Completed scroll {i+1} out of {number_of_scrolls)}')
+        if i%10 == 0:
+            print(f'Completed scroll {i+1} out of {number_of_scrolls)}')
         time.sleep(2)
 
     # Creates an object containing indices for every item on the page after scrolling
@@ -136,7 +137,7 @@ def page_dataframe(list_of_links, file_path):
         except NoSuchElementException:
             FeedBack.append(np.nan)
 
-        
+
         try:
             CurrentListings.append(driver.find_element_by_xpath('//a[@class="-for-sale-link"]').text)
         except NoSuchElementException:
