@@ -354,3 +354,4 @@ chromedriver
 .DS_Store
 /src/converted_images
 /src/test
+.vscode/settings.json
