@@ -28,7 +28,9 @@ Next, I created a function to navigate to each URL in my DataFrame's Link column
 
 Finally, I removed the backgrounds from each image and isolated the item in them. I used the ColorThief library to extract the 3 most dominant colors from each image and stored them in a 3 column DataFrame of RGB tuples. 
 
+Here, you can see that the background of the image is the most dominant color in the palette
 ![Palette with background noise](./src/readme_img/palette1.png)
+After removing the background, the dominant colors remain and black is easily removed
 ![Palette after processing](./src/readme_img/palette2.png)
 
 All three DataFrames were then joined by index to create one data set with 67 columns and 10,000 rows.
@@ -49,12 +51,17 @@ However, in items with a lot of colors, the similarities tend to break down a bi
 Finally, in this plot you can see that the filter was able to find a different listing for a very similar item, potentially offering the buyer a lower-priced alternative of the first listing. This is an early sign that I've achieved one of my project's goals.
 ![Fourth similarity plot](./src/readme_img/6plot4.png)
 
+(NLP, tfidf, PCA, visualizations)
 
 ## Modeling 
+
+(cosine similarity, standard deviation of likes, support vector clustering, k-means)
 
 ## Results
 
 ## Next Steps
+
+(GUI, expanded dataset, )
 
 ## Acknowledgements
 
