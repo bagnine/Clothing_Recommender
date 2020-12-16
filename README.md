@@ -33,7 +33,7 @@ Here, you can see that the background of the image is the most dominant color in
 After removing the background, the dominant colors remain and black is easily removed
 ![Palette after processing](./src/readme_img/palette2.png)
 
-All three DataFrames were then joined by index to create one data set with 67 columns and 10,000 rows.
+All three data sets were then joined by index to create one data set with 67 columns and 10,000 rows.
 
 ## Methods
 
@@ -55,22 +55,57 @@ Finally, in this plot you can see that the filter was able to find a different l
 
 ![Fourth similarity plot](./src/readme_img/6plot4.png)
 
-(NLP, tfidf, PCA, visualizations)
+I analyzed the descriptions of each item using SciKit Learn's TF-IDF Vectorizer and generated features using the top 100 words it returned. 
+
+I also split sizing and designer data into bins and created features for them. 
 
 ## Modeling 
 
-(cosine similarity, standard deviation of likes, support vector clustering, k-means)
+I created four basic recommender models. The first one, as shown above, uses Euclidean distance to recommend items with the most similar color palette to the target. 
+
+The next 3 model used clustering, cosine similarity and K Nearest Neighbors to select items based on 2 different data sets- the full set of features, including seller data, location and NLP features engineered from the item descriptions, and a stripped down version that relies only on categories a user could reasonably input.
+
+In evaluating these models, I used visual inspection, difference of mean price of recommendations from the target, standard deviation of 'likes' between the recommended items, and cosine similarity. I wanted my recommendations to have the following qualities:
+
+* Visual similarity to the target
+* Similar prices to the target
+* A wide variety of likes, meaning that the selections included both popular and lesser-known items
+* As close as possible to the scaled features of the target overall
+
+After testing the above models, I created an ensemble recommender which ran all four of the functions I created and returns recommendations based on frequency from each of them. I also created a few weight standards to choose from in testing the models in order to focus more on visual features or overall similarity.
+
+While I believe my chosen metrics are a good measure of the quality of my model's recommendations, the only true test of their quality would be with A/B testing with actual customers navigating the website. The measures I've employed are simply an attempt to create the best predictions possible before a rollout, as poor ones could negatively impact the website, the sellers and the customers browsing. 
 
 ## Results
 
+
+
 ## Next Steps
 
-(GUI, expanded dataset, )
+Now that I have a function that can make recommendations, I'd like to create a proper implementation of my model- first by developing a GUI capable of recommending from within my data set, and then a web app that could be integrated with a dynamic data set, possibly including multiple seller-to-seller markets like the ones mentioned above.
+
+In addition to the GUI, I'd like to add a function that takes in an uploaded image, extracts the color features from it and makes recommendations when combined with user input size and price preferences. 
+
+I would also create a feature that allows multiple types of items (shoes, pants, glasses, etc.) with the hope of ultimately creating a function that could curate an entire outfit or wardrobe. Incorporating deep learning would be an exciting aspect at this step. 
 
 ## Acknowledgements
 
-Sections of code from the web scraping portion of this project were modified from (link here) 
+Sections of code from the web scraping portion of this project were modified from [Scraping Grailed](https://medium.com/@mike_liu/scraping-grailed-8501eef914a8)
 
-The removal of image backgrounds using OpenCV was modified from Chris Albon's tutorial here (link)
+The removal of image backgrounds using OpenCV was modified from Chris Albon's tutorial [here](https://chrisalbon.com/machine_learning/preprocessing_images/remove_backgrounds/)
 
-## Repo Structure
+I referenced several websites to learn about evaluation metrics in item-to-item recommendation systems, including [Evaluatin g Recommendation Systems](https://medium.com/fnplus/evaluating-recommender-systems-with-python-code-ae0c370c90be)
+
+## Repository Structure
+
+```
+├── clothing_recommender.ipynb                The main notebook detailing summary of EDA, modeling and results
+├── README.md                                 The README for this project                                 
+├── notebooks                                 Data scraping, modeling and exploratory notebooks
+│   ├── EDA
+│   └── modelling
+└── src
+    ├── data                                  Web scraped and engineered data
+    ├── modules                               Functions used in this repository's notebooks
+    └── readme_img                            README source images
+```
