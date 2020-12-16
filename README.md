@@ -40,15 +40,19 @@ All three DataFrames were then joined by index to create one data set with 67 co
 After cleaning my data, I created a series of functions which used the color tuples to visually inspect the data based on Euclidean distance. My objectives were to verify that my background removal function had been effective, that I had successfully filtered the black from the now missing background, and that the remaining colors could be used to return visually similar items.
 
 I chose to use some of the same images as in the image_process notebook in order to see how successful my removal of backgrounds was as well as the general similarliy of the items.
+
 ![First similarity plot](./src/readme_img/6plot.png)
 
 Subsequent tests showed that the dominant colors were very easily matched up in items that were mostly one or two colors.
+
 ![Second similarity plot](./src/readme_img/6plot2.png)
 
 However, in items with a lot of colors, the similarities tend to break down a bit. In future iterations I may expand the number of colors to pull from each palette in order to better categorize images like this one.
+
 ![Third similarity plot](./src/readme_img/6plot3.png)
 
 Finally, in this plot you can see that the filter was able to find a different listing for a very similar item, potentially offering the buyer a lower-priced alternative of the first listing. This is an early sign that I've achieved one of my project's goals.
+
 ![Fourth similarity plot](./src/readme_img/6plot4.png)
 
 (NLP, tfidf, PCA, visualizations)
