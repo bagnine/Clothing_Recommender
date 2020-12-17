@@ -6,12 +6,18 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 def plot_color_palette(img_path):
+    '''Takes in an image path, pulls the color palette from that image 
+       using ColorThief and displays the image and color palette side by side'''
+    
+    # Read in the image, convert to RGB
     image_vec = cv.imread(img_path, 1)
     RGB_img = cv.cvtColor(image_vec, cv.COLOR_BGR2RGB)
 
+    # Instantiate ColorThief and pull palette
     color_thief = ColorThief(img_path)
     color_palette = color_thief.get_palette(quality = 1, color_count=3)
 
+    # Reshape color array and plot
     palette = np.array(color_palette)[np.newaxis, :, :]
 
     fig, (ax1, ax2) = plt.subplots(1,2, figsize = (10,6))

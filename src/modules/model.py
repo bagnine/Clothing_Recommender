@@ -47,7 +47,9 @@ def cluster_recommendations(input_row, dataframe, n_clusters):
     return rec_list
 
 def display_kmeans_recs(input_row, dataframe, n_clusters):
-    ''''''
+    '''Takes in a target row, a dataframe and number of clusters. 
+       Using KMeans, assigns each observation to clusters, then finds the cluster
+       of the target row and displays the target and 5 random images from it.'''
     
     # Take indices from clusters with the target row
     indices = cluster_recommendations(input_row, dataframe, n_clusters)
@@ -89,17 +91,28 @@ def display_kmeans_recs(input_row, dataframe, n_clusters):
 #================================================ K Nearest Neighbors Recommender ========================================
 
 def KNN_recs(input_row, dataframe, n_neighbors, n_recs = 8):
+    '''Using K Nearest Neighbors, takes in a target row, a dataframe, and a
+       specified number of k neighbors and the desired number of recommendations
+       (default 8).
+       
+       Returns the recommendations.'''
+    
+    # Instantiate and fit Nearest Neighbors
     knn = NearestNeighbors(n_neighbors= n_neighbors, n_jobs=-1)
     knn.fit(dataframe)
 
+    # Generate the closest rows
     recs = knn.kneighbors(X= input_row, n_neighbors=n_recs, return_distance=False)
     indices = []
+
+    # Re-calculate to get the correct indices
     for i in recs[0]:
         indices.append(dataframe.iloc[[i]].index[0])
     return indices[1:]
 
 def display_KNN_recs(input_row, dataframe, n_neighbors):
-    
+    '''Using KNN_recs as a helper function, displays the corresponding images of 5
+       recommendations, plus the target'''
     # Take indices from nearest neighbors
     indices = KNN_recs(input_row, dataframe, n_neighbors)
     
@@ -158,7 +171,8 @@ def cosine_similarity_recs(input_row, dataframe):
     return sorted(cos_sim)[-2:-11:-1]
 
 def display_cosim_recs(input_row, dataframe):
-    ''''''
+    '''Using cosine_similarity_recs, generates recommendations based on a 
+       target row, then displays the corresponding images of target and recs'''
     
     # Take indices from closest cosine similarities to the target row
     indices = [i[1] for i in cosine_similarity_recs(input_row, dataframe)]
@@ -197,11 +211,30 @@ def display_cosim_recs(input_row, dataframe):
 #=============================================== Ensemble Recommender ====================================================
 
 def ensemble_recs(input_row, dataframe, color_dataframe, n_clusters= 18, model_weights = None):
+    '''Takes in a target input, dataframe, dataframe of RGB tuples, number of 
+       clusters (default 18) and an optional model weight parameter.
+       
+       Uses KNN, clustering, Euclidean distance of color tuples and cosine 
+       similarity to generate recommendation indices. 
+       
+       The indices are then added together. If 'visual' is selected in the 
+       model_weight field, color distance is double weighted. If cosine is 
+       selected, its recommendations are doubled. Otherwise all recommendations
+       are weighted equally.
+       
+       The indices are then collated into a list of ten recommendations based on
+       frequency between the four models and returned.'''
+    
     cos_sim = []
     color_output = []
+    
+    # Generate 500 KNN recommendations
     knn = KNN_recs(input_row, dataframe, 8, n_recs = 500)
+    
+    # Generate ~500 recs based on KMeans clustering
     kmean = cluster_recommendations(input_row, dataframe, n_clusters=n_clusters)
 
+    # Generate a list of nearest RGB distances
     for i in dataframe.index:
         try:
             color_output.append((sum(
@@ -210,28 +243,44 @@ def ensemble_recs(input_row, dataframe, color_dataframe, n_clusters= 18, model_w
                 dist.euclidean(color_dataframe['2'][input_row.index[0]], color_dataframe['2'][i])]), i))
         except KeyError:
             continue
-    
+    # Generate cosine similarity recommendations
         try:
             cos_sim.append((cosine_similarity(input_row, dataframe.iloc[i].values.reshape(1,-1)), i))
         
         except IndexError:
             continue
-    cos_sim = [i[1] for i in sorted(cos_sim[:-2:])][0:500]
-    color_output = [i[1] for i in sorted(color_output)][0:500]
     
+    # Sort cosine similarity recs and select the 500 closest, excluding the target
+    cos_sim = [i[1] for i in sorted(cos_sim[:-2:])][0:500]
+    
+    # Sort color distance recs and select 500, excluding the target
+    color_output = [i[1] for i in sorted(color_output)][1:501]
+    
+    # Add model weights to the predictions if selected- doubling the frequency of
+    # the top 50 recommendations from the color recommender or cosine similarity 
+    # function
     if model_weights == 'visual':
-        e = cos_sim + color_output + color_output + knn + kmean
+        e = cos_sim + color_output + color_output[:50] + knn + kmean
     elif model_weights == 'cos_sim':
-        e = cos_sim + cos_sim + color_output + knn + kmean
+        e = cos_sim + cos_sim[:50] + color_output + knn + kmean
     else:
         e = cos_sim + color_output + knn + kmean
     
+    # Count the instances of each index being recommended
     rec_dict = Counter(e)
+    
+    # Separate keys and values into lists
     f = list(rec_dict.keys())
     g = list(rec_dict.values())
     
+    # Select the index of the most occuring values
     max_ = [i for i, x in enumerate(g) if x == max(g)]
+    
+    # Add the keys for each of the most occuring values by index
     recs = [f[i] for i in max_]
+    
+    # If there are 10 recommendations in the list, return, 
+    # otherwise continue the process for the next lowest number of recs
     if len(recs) >= 10:
         return recs[:10]
     max_minus = [i for i, x in enumerate(g) if x == max(g)-1]
@@ -246,6 +295,11 @@ def ensemble_recs(input_row, dataframe, color_dataframe, n_clusters= 18, model_w
 #=============================================== Evaluation Metrics ======================================================
  
 def evaluate_recs(target_index, recommendation_indices, dataframe, colordata):
+    '''Evaluate the quality of recommendations based on four metrics- Cosine Similarity, 
+       color distance, standard deviation of likes and difference in mean price from target.
+       
+       Requires 4 arguments- the target index, recommendation indices, the dataframe and
+       the dataframe of color tuples.'''
     
     list_of_columns = [colordata['0'], colordata['1'], colordata['2']]
     distance = []
@@ -265,6 +319,7 @@ def evaluate_recs(target_index, recommendation_indices, dataframe, colordata):
     print('Difference in mean price and target item:', (dataframe.Price[recommendation_indices].mean()- dataframe.Price[target_index]))
 
 def show_recs(target, recs):
+    '''Takes a list of recommendation indices and a target and displays them all'''
     images = []
     images.append(Image.open(f'./src/images/{target}.jpg'))
     for i in recs:
@@ -285,23 +340,71 @@ def show_recs(target, recs):
     ax[0,3].imshow(images[3])
     ax[0,3].axis('off')
     ax[0,3].set_title('Recommendation 3')
-    ax[0,4].imshow(images[3])
+    ax[0,4].imshow(images[4])
     ax[0,4].axis('off')
     ax[0,4].set_title('Recommendation 4')
-    ax[1,0].imshow(images[4])
+    ax[1,0].imshow(images[5])
     ax[1,0].axis('off')
     ax[1,0].set_title('Recommendation 5')
-    ax[1,1].imshow(images[5])
+    ax[1,1].imshow(images[6])
     ax[1,1].axis('off')
     ax[1,1].set_title('Recommendation 6')
-    ax[1,2].imshow(images[6])
+    ax[1,2].imshow(images[7])
     ax[1,2].axis('off')
     ax[1,2].set_title('Recommendation 7')
-    ax[1,3].imshow(images[7])
+    ax[1,3].imshow(images[8])
     ax[1,3].axis('off')
     ax[1,3].set_title('Recommendation 8')
-    ax[1,4].imshow(images[8])
+    ax[1,4].imshow(images[9])
     ax[1,4].axis('off')
     ax[1,4].set_title('Recommendation 9')
 
     return plt.show()
+
+def evaluate_model(dataframe, color_dataframe, model_weights = None, n_samples = 20):
+    '''Runs the ensemble model n number of times with randomly selected target
+       rows and returns average cosine similarity, color distance, standard deviation
+       of likes and mean price difference from each of the recommendations.'''
+    
+    # Create an empty dictionary for average metrics
+    evaluations = {}
+    
+    # List of columns for color distance
+    list_of_columns = [color_dataframe['0'], color_dataframe['1'], color_dataframe['2']]
+    
+    # Empty lists for each model iteration's evaluation metrics
+    avg_cos_sim = []
+    avg_dist = []
+    avg_std_likes = []
+    avg_price_dif = []
+
+    # Iterate through n random rows as targets
+    for i in np.random.choice(dataframe.index, size = n_samples, replace= False):
+        
+        # Create recommendations for each row
+        recs = model.ensemble_recs(dataframe.loc[[i]], dataframe, color_dataframe, model_weights= model_weights)
+        
+        # Empty lists for individual item metrics
+        cos_sim = []
+        distance = []
+
+        # Iterate through recommendations and evaluate individually, append averages to iteration lists
+        for j in recs:
+            cos_sim.append(cosine_similarity(dataframe.loc[[i]], dataframe.loc[[j]]))
+            distance.append(np.mean(
+               [dist.euclidean(list_of_columns[0][i], list_of_columns[0][j]),
+                dist.euclidean(list_of_columns[1][i], list_of_columns[1][j]),
+                dist.euclidean(list_of_columns[2][i], list_of_columns[2][j])]))
+        avg_cos_sim.append(np.mean(cos_sim))
+        avg_dist.append(np.mean(distance))
+        avg_std_likes.append(dataframe['FollowerCount'][recs].std())
+        avg_price_dif.append(dataframe.Price[recs].mean() - dataframe.Price[i])
+    
+    # Update dictionary with averages of every iteration's performance
+    evaluations.update({'cos_sim' : np.mean(avg_cos_sim),
+                        'distance' : np.mean(avg_dist),
+                        'std_likes' : np.mean(avg_std_likes),
+                        'mean_price_dif' : np.mean(avg_price_dif)})
+    
+    # Return evaluation averages
+    return evaluations

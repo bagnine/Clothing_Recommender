@@ -7,15 +7,18 @@ from PIL import Image
 #================================================= Data Cleaning ============================================
 
 def dollars_to_int(column):
-    ''''''
+    '''Takes an unformatted price column and returns the column reformatted and
+       converted to integers'''
     column = column.str.replace('$', '')
     column = column.str.replace(',', '')
     return pd.to_numeric(column) 
 
 def format_listings(column):
-    ''''''
+    '''Takes a column of strings in Number, text format, removes text and converts
+       to integers'''
     listings = []
     for i in column:
+        
         try:
             listings.append(int(i.split()[0]))
         except AttributeError:
@@ -23,8 +26,11 @@ def format_listings(column):
     return listings
 
 def bin_designers(column):
-    ''''''
+    '''Takes in a column of designers and bins similar entries to the most frequent
+       categories'''
+    # For some reason this needs to be run twice or it misses some things
     for i in [0,1]:
+        # Iterate through the column and convert to binned class names
         for i, name in enumerate(column):
             name = str(name)
             name.strip()
@@ -100,7 +106,13 @@ def bin_designers(column):
 #================================================= Filtering Images by Color =============================================
 
 def find_closest_colors(item_index, list_of_columns, dataframe, n_recs = 5):
-    ''''''
+    '''Takes in a target index, a list of columns containing RGB tuples, the
+       target dataframe and the number of recommendations to return with a 
+       default value of five.
+       
+       Using Euclidean distance, each item in the dataframe's distance to the
+       target is calculated and stored as a distance, index tuple. The closest n
+       indices are returned.'''
     # Creating an empty list for the distances that will be caculated
     output = []
     
@@ -122,7 +134,11 @@ def find_closest_colors(item_index, list_of_columns, dataframe, n_recs = 5):
 
 
 def display_closest_colors(item_index, list_of_columns, dataframe):
-    ''''''
+    '''Takes in a target index, a list of columns containing RGB tuples and the
+       target dataframe.
+       
+       Using Euclidean distance, the top five closest rows of the dataframe by color 
+       are generated. Each index is used to plot a corresponding image of the item.'''
     # Get RGB data from the target item
     tuples = [list_of_columns[0][item_index],
               list_of_columns[1][item_index],

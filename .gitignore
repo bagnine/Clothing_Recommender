@@ -355,3 +355,4 @@ chromedriver
 /src/converted_images
 /src/test
 .vscode/settings.json
+/.ipynb_checkpoints
