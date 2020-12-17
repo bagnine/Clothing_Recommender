@@ -99,7 +99,7 @@ def bin_designers(column):
 
 #================================================= Filtering Images by Color =============================================
 
-def find_closest_colors(list_of_tuples, list_of_columns, dataframe):
+def find_closest_colors(item_index, list_of_columns, dataframe, n_recs = 5):
     ''''''
     # Creating an empty list for the distances that will be caculated
     output = []
@@ -109,16 +109,16 @@ def find_closest_colors(list_of_tuples, list_of_columns, dataframe):
     # a tuple with each index number
     for i in dataframe.index:
         output.append((sum(
-            [dist.euclidean(list_of_tuples[0], list_of_columns[0][i]),
-            dist.euclidean(list_of_tuples[1], list_of_columns[1][i]),
-            dist.euclidean(list_of_tuples[2], list_of_columns[2][i])]), i))
+            [dist.euclidean(list_of_columns[0][item_index], list_of_columns[0][i]),
+            dist.euclidean(list_of_columns[1][item_index], list_of_columns[1][i]),
+            dist.euclidean(list_of_columns[2][item_index], list_of_columns[2][i])]), i))
     
     # Taking the indices of the 5 closest items, plus the original (it will always be first because
     # its distance to itself is 0)
-    indices = [i[1] for i in sorted(output)[0:6]]
+    indices = [i[1] for i in sorted(output)[0:(n_recs+1)]]
     
     # Returning the DataFrame rows of the nearest color palettes
-    return dataframe.iloc[indices]
+    return indices
 
 
 def display_closest_colors(item_index, list_of_columns, dataframe):
