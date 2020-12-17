@@ -356,3 +356,4 @@ chromedriver
 /src/test
 .vscode/settings.json
 /.ipynb_checkpoints
+/notebooks/.ipynb_checkpoints

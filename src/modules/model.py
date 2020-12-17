@@ -382,7 +382,7 @@ def evaluate_model(dataframe, color_dataframe, model_weights = None, n_samples =
     for i in np.random.choice(dataframe.index, size = n_samples, replace= False):
         
         # Create recommendations for each row
-        recs = model.ensemble_recs(dataframe.loc[[i]], dataframe, color_dataframe, model_weights= model_weights)
+        recs = ensemble_recs(dataframe.loc[[i]], dataframe, color_dataframe, model_weights= model_weights)
         
         # Empty lists for individual item metrics
         cos_sim = []
