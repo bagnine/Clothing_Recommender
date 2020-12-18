@@ -4,7 +4,7 @@ bagnine@gmail.com
 
 ## The Business Problem
 
-Since the onset of the COVID-19 pandemic, online shopping has increased quarter over quarter by over 30%. While many retail platforms have completely re-designed their platforms to optimize for the trend in online sales, seller to seller markets for the most part remain unchanged. 
+Since the onset of the COVID-19 pandemic, online shopping has increased quarter over quarter by over 30%. While many retailers have completely re-designed their platforms to optimize for the trend in online sales, seller to seller markets for the most part remain unchanged. 
 
 For consumers who are trying to avoid fast fashion, or who want to shop based on aesthetic rather than brand, sites like eBay, Etsy, Grailed, thredup and many others offer significant challenges. Because these sites rely on seller input to catalogue and organize their data, most items contain the same keywords designed to direct traffic. The massive number of listings can result in endless scrolling and hundreds of identical entries, leading to fatigue on the user's part. 
 
@@ -63,21 +63,24 @@ I also split sizing and designer data into bins and created features for each of
 
 I created four basic recommender models. The first one, as shown above, uses Euclidean distance to recommend items with the most similar color palette to the target. 
 
-The next 3 model used clustering, cosine similarity and K Nearest Neighbors to select items based on 2 different data sets- the full set of features, including seller data, location and NLP features engineered from the item descriptions, and a stripped down version that relies only on categories a user could reasonably input.
+The next 3 models used clustering, cosine similarity and K Nearest Neighbors to select items based on 2 different data sets- the full set of features, including seller data, location and NLP features engineered from the item descriptions, and a stripped down version that relies only on categories a user could reasonably input.
 
 In evaluating these models, I used visual inspection, difference of mean price of recommendations from the target, standard deviation of 'likes' between the recommended items, cosine similarity and euclidean color distance. I wanted my recommendations to have the following qualities:
 
-* Visual similarity to the target
+* Visual similarity to the target, from both quantitative analysis and visual inspection
 * Similar prices to the target
 * A wide variety of likes, meaning that the selections included both popular and lesser-known items
 * As close as possible to the scaled features of the target overall
-* A low distance from each other colors in the target palette
 
 After testing the above models, I created an ensemble recommender which ran all four of the functions I created and returns recommendations based on frequency from each of them. I also created a few weight standards to choose from in testing the models in order to focus more on visual features or overall similarity.
 
 Finally, I designed a function to randomly select target rows from my data, generate recommendations from them, and aggregate the metrics in order to validate my models' performances.
 
 ## Results
+
+The chart below shows the evaluation metrics of six combinations of data and model weighting- 
+
+A simple data set without weights, weighted for visual similarity and weighted for cosine similarity, and a more complex 'Full' data set with the same 3 iterations. 
 
 ![Ensemble Method Evaluation](./src/readme_img/evaluations.png)
 
@@ -107,7 +110,7 @@ Sections of code from the web scraping portion of this project were modified fro
 
 The removal of image backgrounds using OpenCV was modified from Chris Albon's tutorial [here](https://chrisalbon.com/machine_learning/preprocessing_images/remove_backgrounds/)
 
-I referenced several websites to learn about evaluation metrics in item-to-item recommendation systems, including [Evaluatin g Recommendation Systems](https://medium.com/fnplus/evaluating-recommender-systems-with-python-code-ae0c370c90be)
+I referenced several websites to learn about evaluation metrics in item-to-item recommendation systems, including [Evaluating Recommendation Systems](https://medium.com/fnplus/evaluating-recommender-systems-with-python-code-ae0c370c90be)
 
 ## Repository Structure
 
