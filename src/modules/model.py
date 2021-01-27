@@ -57,10 +57,10 @@ def display_kmeans_recs(input_row, dataframe, n_clusters):
     # Create an empty list and append the images from each indice to it, starting
     # with the input row
     images = []
-    images.append(Image.open(f'./src/images/{input_row.index[0]}.jpg'))
+    images.append(Image.open(f'../src/images/{input_row.index[0]}.jpg'))
     
     for i in np.random.choice(indices, size=6, replace=True):
-        images.append(Image.open(f'./src/images/{i}.jpg'))
+        images.append(Image.open(f'../src/images/{i}.jpg'))
     
               
     # Display the images
@@ -121,7 +121,7 @@ def display_KNN_recs(input_row, dataframe, n_neighbors):
     images = []
     
     for i in indices:
-        images.append(Image.open(f'./src/images/{i}.jpg'))
+        images.append(Image.open(f'../src/images/{i}.jpg'))
     
               
     # Display the images
@@ -180,9 +180,9 @@ def display_cosim_recs(input_row, dataframe):
     # Create an empty list and append the images from each indice to it, starting
     # with the input row
     images = []
-    images.append(Image.open(f'./src/images/{input_row.index[0]}.jpg'))
+    images.append(Image.open(f'../src/images/{input_row.index[0]}.jpg'))
     for i in indices:
-        images.append(Image.open(f'./src/images/{i}.jpg'))
+        images.append(Image.open(f'../src/images/{i}.jpg'))
     
     # Display the images
     fig, ax = plt.subplots(2, 3, figsize = (10,6))
@@ -318,12 +318,13 @@ def evaluate_recs(target_index, recommendation_indices, dataframe, colordata):
     print('Standard Deviation of likes in Recommendation Group:', dataframe['FollowerCount'][recommendation_indices].std())
     print('Difference in mean price and target item:', (dataframe.Price[recommendation_indices].mean()- dataframe.Price[target_index]))
 
-def show_recs(target, recs):
+def show_recs(recs, target = None):
     '''Takes a list of recommendation indices and a target and displays them all'''
     images = []
-    images.append(Image.open(f'./src/images/{target}.jpg'))
+    if target != None:
+        images.append(Image.open(f'/Users/nicksubic/Documents/flatiron/phase_1/nyc-mhtn-ds-091420-lectures/capstone/Clothing_Recommender/src/images/{target}.jpg'))
     for i in recs:
-        images.append(Image.open(f'./src/images/{i}.jpg'))
+        images.append(Image.open(f'/Users/nicksubic/Documents/flatiron/phase_1/nyc-mhtn-ds-091420-lectures/capstone/Clothing_Recommender/src/images/{i}.jpg'))
     
     # Display the original image and top five closest
     fig, ax = plt.subplots(2, 5, figsize = (12,6))

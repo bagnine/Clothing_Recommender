@@ -6,16 +6,12 @@ bagnine@gmail.com
 
 Since the onset of the COVID-19 pandemic, online shopping has increased quarter over quarter by over 30%. While many retailers have completely re-designed their platforms to optimize for the trend in online sales, seller to seller markets for the most part remain unchanged. 
 
-For consumers who are trying to avoid fast fashion, or who want to shop based on aesthetic rather than brand, sites like eBay, Etsy, Grailed, thredup and many others offer significant challenges. Because these sites rely on seller input to catalogue and organize their data, most items contain the same keywords designed to direct traffic. The massive number of listings can result in endless scrolling and hundreds of identical entries, leading to fatigue on the user's part. 
+In sites like eBay, ThredUp and Etsy, there are millions of listings in every clothing category which are only searchable using keywords and filters. Because sellers take advantage of these systems to redirect traffic, I'm developing a model that uses image data to make large, disorganized data searchable using visual features.
 
-On the seller's side, it may be extremely difficult to market unique vintage products that would easily sell at an in-person market but don't fit conventional search criteria. 
-
-Finally, for the host sites themselves, a more easily navigated interface could boost confidence in their brand and direct more traffic, sales and ad revenue. 
-
-For this project, my proposed solution to the problems above is to create a platform capable of analyzing image data and recommending clothing based on color and appearance as well as conventional criteria like size or price. Here are a few ways that this platform could benefit the buyer, seller and host:
+Here are a few ways that this platform could benefit the buyer, seller and host:
 
 * Buyers can use one listing to search for identical items at lower prices or in different sizes
-* Images from social media or music videos could be input into search engines to return similar results
+* Images from social media or music videos could be input into search engines to reproduce looks
 * Users could take photos of their existing wardrobe and search for items in different categories that match specific colors
 * International sellers could easily market items without being hindered by language barriers
 * Host sites can create sleek, visual interfaces to make the experience on their site more closely mimic in-person shopping
@@ -65,12 +61,16 @@ I created four basic recommender models. The first one, as shown above, uses Euc
 
 The next 3 models used clustering, cosine similarity and K Nearest Neighbors to select items based on 2 different data sets- the full set of features, including seller data, location and NLP features engineered from the item descriptions, and a stripped down version that relies only on categories a user could reasonably input.
 
-In evaluating these models, I used visual inspection, difference of mean price of recommendations from the target, standard deviation of 'likes' between the recommended items, cosine similarity and euclidean color distance. I wanted my recommendations to have the following qualities:
+The purpose of the split data sets was to simulate a recommender happening behind the scenes as a user browses a site without inputting any filtering data versus a smaller set of features relying only on user input.
+
+## Evaluation Metrics
+
+Item to Item recommendation systems are difficult to evaluate without user sentiment, but in the interest of improving my results before even a limited deployment, I created a handful of metrics and set thresholds for each iteration's performance.
 
 * Visual similarity to the target, from both quantitative analysis and visual inspection
-* Similar prices to the target
-* A wide variety of likes, meaning that the selections included both popular and lesser-known items
-* As close as possible to the scaled features of the target overall
+* Price similarity to target, measured by mean difference in price with recommendations
+* Standard deviation of likes as a means to combat the long tail problem- ideally the recommended items would have a deviation that matches the full data set.
+* Cosine similarity, as a means to guage the similarity across features like size, vintage, etc.
 
 After testing the above models, I created an ensemble recommender which ran all four of the functions I created and returns recommendations based on frequency from each of them. I also created a few weight standards to choose from in testing the models in order to focus more on visual features or overall similarity.
 
@@ -98,9 +98,9 @@ The full data set is optimized for recommendations based on user behavior, but w
 
 My immediate next steps with this model will be to implement a user trial by asking a group to select an image of a piece of clothing they like or want to buy along with size and price information and generating recommendations from this dataset for them to rate.
 
-Next, I'd like to create a proper implementation of my model- first by developing a GUI capable of recommending from within my data set, and then a web app that could be integrated with a dynamic data set, possibly including multiple seller-to-seller markets like the ones mentioned above.
+I've created a GUI using Streamlit in order to facilitate user evaluation. Its current iteration is capable of making recommendations from the dataset using user inputs of size, price, vintage and a selection of three colors. 
 
-In addition to the GUI, I'd like to add a function that takes in an uploaded image, extracts the color features from it and makes recommendations when combined with user input size and price preferences. 
+As I continue to devleop the GUI, I'd like to add a function that takes in an uploaded image, extracts the color features from it and makes recommendations when combined with user input. 
 
 I would also create a feature that allows multiple types of items (shoes, pants, glasses, etc.) with the hope of ultimately creating a function that could curate an entire outfit or wardrobe. Incorporating deep learning would be an exciting aspect at this step- by classifying an image with a CNN, similar items across categories and even outside of apparel could be recommended.
 
